@@ -1,9 +1,9 @@
 package model;
 
 public enum Tag {
-    DICA("Dica"),
     RECLAMACAO("Reclamação"),
-    RESUMO("Resumo");
+    ELOGIO("Elogio"),
+    DICA("Dica");
 
     private final String nomeExibicao;
 

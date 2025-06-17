@@ -5,14 +5,14 @@ import java.util.Objects;
 import java.util.Set;
 
 public class Disciplina {
-    private Long id;
+    private long id;
     private String codigo;
     private String nome;
     private int numeroDeCreditos;
 
     private Set<Disciplina> preRequisitos;
 
-    public Disciplina(Long id, String codigo, String nome, int numeroDeCreditos) {
+    public Disciplina(long id, String codigo, String nome, int numeroDeCreditos) {
         this.id = id;
         this.codigo = codigo;
         this.nome = nome;
@@ -20,11 +20,11 @@ public class Disciplina {
         this.preRequisitos = new HashSet<>();
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 

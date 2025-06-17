@@ -7,8 +7,8 @@ import java.util.Objects;
 import java.util.LinkedList;
 
 public class Avaliacao {
-    private Long id;
-    private double nota;
+    private long id;
+    private float nota;
     private String comentario;
     private LocalDate data;
     private String titulo;
@@ -19,8 +19,11 @@ public class Avaliacao {
 
     private List<Mensagem> mensagens;
 
-    public Avaliacao(Long id, double nota, String comentario, LocalDate data, String titulo, Estudante estudante,
-            Turma turma, Tag tag) {
+    public Avaliacao(long id, float nota, String comentario, LocalDate data, String titulo, Estudante estudante,
+            Turma turma, Tag tag) throws IllegalArgumentException {
+        if (nota < 0 || nota > 5) {
+            throw new IllegalArgumentException("Nota deve estar entre 0 e 5.");
+        }
         this.id = id;
         this.nota = nota;
         this.comentario = comentario;
@@ -32,19 +35,19 @@ public class Avaliacao {
         this.mensagens = new LinkedList<>();
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public double getNota() {
+    public float getNota() {
         return nota;
     }
 
-    public void setNota(double nota) {
+    public void setNota(float nota) {
         this.nota = nota;
     }
 

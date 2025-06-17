@@ -1,13 +1,11 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 public class Turma {
-    private Long id;
+    private long id;
     private String sala;
     private String horario;
     private String codigo; // Identificador da turma (ex: INF-1010)
@@ -15,9 +13,8 @@ public class Turma {
     private Disciplina disciplina;
     private Set<Estudante> estudantes;
     private Professor professor;
-    private List<Avaliacao> avaliacoes;
 
-    public Turma(Long id, String sala, String horario, String codigo, Disciplina disciplina, Professor professor) {
+    public Turma(long id, String sala, String horario, String codigo, Disciplina disciplina, Professor professor) {
         this.id = id;
         this.sala = sala;
         this.horario = horario;
@@ -25,14 +22,13 @@ public class Turma {
         this.disciplina = disciplina;
         this.professor = professor;
         this.estudantes = new HashSet<>();
-        this.avaliacoes = new ArrayList<>();
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -84,37 +80,16 @@ public class Turma {
         this.professor = professor;
     }
 
-    public List<Avaliacao> getAvaliacoes() {
-        return avaliacoes;
-    }
-
-    public void setAvaliacoes(List<Avaliacao> avaliacoes) {
-        this.avaliacoes = avaliacoes;
-    }
-
-    // Métodos para gerenciar coleções
     public void adicionarEstudante(Estudante estudante) {
         this.estudantes.add(estudante);
-        // Gerenciamento de link bidirecional:
-        // estudante.adicionarTurmaMatriculada(this);
     }
 
     public void removerEstudante(Estudante estudante) {
         this.estudantes.remove(estudante);
-        // Gerenciamento de link bidirecional:
-        // estudante.removerTurmaMatriculada(this);
     }
 
-    public void adicionarAvaliacao(Avaliacao avaliacao) {
-        this.avaliacoes.add(avaliacao);
-        // Gerenciamento de link bidirecional:
-        // avaliacao.setTurma(this);
-    }
-
-    public void removerAvaliacao(Avaliacao avaliacao) {
-        this.avaliacoes.remove(avaliacao);
-        // Gerenciamento de link bidirecional:
-        // avaliacao.setTurma(null);
+    public boolean estaMatriculado(Estudante estudante) {
+        return this.estudantes.contains(estudante);
     }
 
     @Override
@@ -134,10 +109,18 @@ public class Turma {
 
     @Override
     public String toString() {
+        String estudantesStr = estudantes != null ? estudantes.stream()
+                .map(d -> d.getNome())
+                .collect(java.util.stream.Collectors.joining(", ", "[", "]"))
+                : "[]";
         return "Turma{" +
                 "id=" + id +
                 ", codigo='" + codigo + '\'' +
                 ", disciplina=" + (disciplina != null ? disciplina.getNome() : "N/A") +
+                ", professor=" + (professor != null ? professor.getNome() : "N/A") +
+                ", sala='" + sala + '\'' +
+                ", horario='" + horario + '\'' +
+                ", estudantes=" + estudantesStr +
                 '}';
     }
 }
