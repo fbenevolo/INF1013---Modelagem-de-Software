@@ -1,6 +1,7 @@
 package service;
 
 import java.time.LocalDate;
+
 import model.Avaliacao;
 import model.Estudante;
 import model.Professor;
@@ -18,6 +19,12 @@ public class AppService {
     public Estudante cadastrarEstudante(String nome, String email, String senha, String matricula) 
     {
         Estudante e = new Estudante(0, nome, email, senha, matricula);
+        repository.inserirEstudante(e);
+        return e;
+    }
+
+    public Estudante loginEstudante(String email, String senha) 
+    {
         repository.inserirEstudante(e);
         return e;
     }

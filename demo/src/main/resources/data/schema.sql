@@ -22,7 +22,7 @@ CREATE TABLE Estudantes (
 );
 
 CREATE TABLE Professores (
-    id INTEGER PRIMARY KEY, -- This will also be the foreign key to Usuarios
+    id INTEGER PRIMARY KEY, 
     matriculaProfessor TEXT UNIQUE NOT NULL,
     FOREIGN KEY (id) REFERENCES Usuarios(id) ON DELETE CASCADE
 );

@@ -1,10 +1,14 @@
 package main;
 
-import DBConnection.DBConnection;
-
 import java.time.LocalDate;
 import java.util.Scanner;
-import model.*;
+
+import DBConnection.DBConnection;
+import model.Disciplina;
+import model.Estudante;
+import model.Professor;
+import model.Tag;
+import model.Turma;
 import service.AppService;
 
 public class Main {
