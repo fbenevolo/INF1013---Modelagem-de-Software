@@ -1,6 +1,11 @@
 package DBConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DBConnection {
     private static final String BASE_PATH = "demo\\src\\main\\resources\\data";
@@ -19,16 +24,13 @@ public class DBConnection {
     }
 
     public static void executeSqlScript(String sqlScript) {
-        try (Connection conn = getConnection();
-                Statement stmt = conn.createStatement()) {
-
+        try (Statement stmt = getConnection().createStatement()) {
             String[] commands = sqlScript.split(";");
             for (String command : commands) {
                 if (!command.trim().isEmpty()) {
                     stmt.execute(command.trim() + ";");
                 }
             }
-
             System.out.println("Schema criado com sucesso.");
         } catch (SQLException e) {
             System.out.println("Erro ao executar schema: " + e.getMessage());
@@ -83,5 +85,23 @@ public class DBConnection {
             System.out.println("Erro ao executar query: " + e.getMessage());
             return null;
         }
+    }
+
+    public static void executeQuery(String sql, ResultSetHandler handler, Object... params) {
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            for (int i = 0; i < params.length; i++) {
+                stmt.setObject(i + 1, params[i]);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                handler.handle(rs);
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao executar query: " + e.getMessage());
+        }
+    }
+
+    @FunctionalInterface
+    public interface ResultSetHandler {
+        void handle(ResultSet rs) throws SQLException;
     }
 }

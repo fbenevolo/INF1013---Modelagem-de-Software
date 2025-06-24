@@ -1,4 +1,3 @@
--- Drop tables if they exist to allow for clean re-creation
 DROP TABLE IF EXISTS Mensagens;
 DROP TABLE IF EXISTS Avaliacoes;
 DROP TABLE IF EXISTS Turma_Estudantes;
@@ -8,10 +7,6 @@ DROP TABLE IF EXISTS Disciplinas;
 DROP TABLE IF EXISTS Professores;
 DROP TABLE IF EXISTS Estudantes;
 DROP TABLE IF EXISTS Usuarios;
--- The 'Tags' table is not strictly necessary as it's an enum, but included for completeness
--- if you wanted to manage tags as dynamic entities in the future.
--- For now, Avaliacoes.tag will store the string representation.
--- DROP TABLE IF EXISTS Tags;
 
 CREATE TABLE Usuarios (
     id INTEGER PRIMARY KEY,
@@ -21,7 +16,7 @@ CREATE TABLE Usuarios (
 );
 
 CREATE TABLE Estudantes (
-    id INTEGER PRIMARY KEY, -- This will also be the foreign key to Usuarios
+    id INTEGER PRIMARY KEY, 
     matriculaEstudante TEXT UNIQUE NOT NULL,
     FOREIGN KEY (id) REFERENCES Usuarios(id) ON DELETE CASCADE
 );
