@@ -1,20 +1,22 @@
 package repository;
 
 import DBConnection.DBConnection;
-import model.Avaliacao;
-import model.Disciplina;
-import model.Estudante;
-import model.Turma;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import model.Avaliacao;
+import model.Disciplina;
+import model.Estudante;
+import model.Professor;
+import model.Tag;
+import model.Turma;
 
 public class AppRepository {
     
@@ -61,8 +63,12 @@ public class AppRepository {
 
             if (rs.next()) {
                 // Você vai precisar carregar estudante e turma de outro lugar
-                Estudante estudante = new Estudante(); estudante.setId(rs.getLong("estudante_id"));
-                Turma turma = new Turma(); turma.setId(rs.getLong("turma_id"));
+                Estudante estudante = new Estudante(0, "Ze das couves", "bla", "Bla", "Bla"); 
+                Disciplina d = new Disciplina(0, "bla", "bla", 4);
+                Professor prof = new Professor(0, "Ze das couves", "bla", "Bla", "Bla"); 
+                estudante.setId(rs.getLong("estudante_id"));
+                Turma turma = new Turma(0, "Bla", "Bla", "blA", d ,prof); 
+                turma.setId(rs.getLong("turma_id"));
 
                 Tag tag = Tag.valueOf(rs.getString("tag"));
 
@@ -95,8 +101,12 @@ public class AppRepository {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Estudante estudante = new Estudante(); estudante.setId(rs.getLong("estudante_id"));
-                Turma turma = new Turma(); turma.setId(rs.getLong("turma_id"));
+                Estudante estudante = new Estudante(0, "Ze das couves", "bla", "Bla", "Bla"); 
+                Disciplina d = new Disciplina(0, "bla", "bla", 4);
+                Professor prof = new Professor(0, "Ze das couves", "bla", "Bla", "Bla"); 
+                estudante.setId(rs.getLong("estudante_id"));
+                Turma turma = new Turma(0, "Bla", "Bla", "blA", d ,prof); 
+                turma.setId(rs.getLong("turma_id"));
                 Tag tag = Tag.valueOf(rs.getString("tag"));
 
                 Avaliacao a = new Avaliacao(
@@ -344,6 +354,42 @@ public class AppRepository {
                     try (PreparedStatement stmtEstudante = conn.prepareStatement(sqlEstudante)) {
                         stmtEstudante.setLong(1, idUsuario);
                         stmtEstudante.setString(2, estudante.getMatriculaEstudante());
+                        stmtEstudante.executeUpdate();
+                    }
+                }
+
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void inserirProfessor(Professor professor) {
+        String sqlUsuario = "INSERT INTO Usuarios (nome, email, senha) VALUES (?, ?, ?)";
+        String sqlProf = "INSERT INTO Professores (id, matriculaProfessor) VALUES (?, ?)";
+
+        try (Connection conn = DBConnection.getConnection()) {
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement stmtUsuario = conn.prepareStatement(sqlUsuario, Statement.RETURN_GENERATED_KEYS)) {
+                stmtUsuario.setString(1, professor.getNome());
+                stmtUsuario.setString(2, professor.getEmail());
+                stmtUsuario.setString(3, professor.getSenha());
+                stmtUsuario.executeUpdate();
+
+                ResultSet keys = stmtUsuario.getGeneratedKeys();
+                if (keys.next()) {
+                    long idUsuario = keys.getLong(1);
+                    professor.setId(idUsuario);
+
+                    try (PreparedStatement stmtEstudante = conn.prepareStatement(sqlProf)) {
+                        stmtEstudante.setLong(1, idUsuario);
+                        stmtEstudante.setString(2, professor.getMatriculaProfessor());
                         stmtEstudante.executeUpdate();
                     }
                 }
