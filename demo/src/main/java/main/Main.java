@@ -75,6 +75,42 @@ public class Main {
                                 "ERRO, TEMPLATE É: ca <TITULO_DISC> <NOTA_DISC> <NUM_TURMA> <COMENTARIO> <TAG>");
                     }
                 }
+                case "ct" -> {
+                    if (inputArgs.length == 6){
+                        try{
+                            String sala = inputArgs[1];
+                            String horario = inputArgs[2];
+                            String codigo = inputArgs[3];
+                            long idDisciplina = Long.parseLong(inputArgs[4]);
+                            long idProfessor = Long.parseLong(inputArgs[5]);
+
+                            Turma turma = service.cadastrarTurma(sala, horario, codigo, idDisciplina, idProfessor);
+                            if(turma != null) {
+                                System.out.println("Turma cadastrada com sucesso. ID: " + turma.getId());
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("ERRO: ID de disciplina ou professor inválido.");
+                        }
+
+                    } else {
+                        System.out.println("ERRO, TEMPLATE É: ct <SALA> <HORARIO> <CODIGO> <ID_DISCIPLINA> <ID_PROFESSOR>");
+                    }
+                }
+                case "cd" -> {
+                    if (inputArgs.length == 4) {
+                        try {
+                            String nome = inputArgs[1];
+                            String codigo = inputArgs[2];
+                            int cargaHoraria = Integer.parseInt(inputArgs[3]);
+                            Disciplina d = service.cadastrarDisciplina(nome, codigo, cargaHoraria);
+                            System.out.println("Disciplina cadastrada com sucesso. ID: " + d.getId());
+                        } catch (NumberFormatException e) {
+                            System.out.println("ERRO: carga horária inválida.");
+                        }
+                    } else {
+                        System.out.println("ERRO, TEMPLATE É: cd <NOME_DISC> <CODIGO_DISC> <CARGA_HORARIA>");
+                    }
+                }
                 default -> {
                     System.out.println("Comando não reconhecido.");
                     printUsage();
@@ -86,13 +122,16 @@ public class Main {
         scanner.close();
     }
 
-    private static void printUsage() {
+        private static void printUsage() {
         System.out.println("""
                 Uso:
-                  ce <NOME_EST> <EMAIL_EST> <SENHA_EST> <MATRICULA_EST>
-                  cp <NOME_PROF> <EMAIL_PROF> <SENHA_PROF> <MATRICULA_PROF>
-                  lu <EMAIL> <SENHA>
-                  ca <TITULO_DISC> <NOTA_DISC> <NUM_TURMA> <COMENTARIO> <TAG>
+                ce <NOME_EST> <EMAIL_EST> <SENHA_EST> <MATRICULA_EST>
+                cp <NOME_PROF> <EMAIL_PROF> <SENHA_PROF> <MATRICULA_PROF>
+                lu <EMAIL> <SENHA>
+                cd <NOME_DISC> <CODIGO_DISC> <CARGA_HORARIA>
+                ct <SALA> <HORARIO> <CODIGO> <ID_DISCIPLINA> <ID_PROFESSOR>
+                ca <TITULO_DISC> <NOTA_DISC> <NUM_TURMA> <COMENTARIO> <TAG>
                 """);
     }
+
 }

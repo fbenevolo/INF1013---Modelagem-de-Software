@@ -521,6 +521,25 @@ public class AppRepository {
         }
     }
 
+    public Professor buscarProfessorPorId(long id) {
+        String sql = "SELECT * FROM Professores WHERE id = ?";
+        try (ResultSet rs = DBConnection.executeQuery(sql, id)) {
+            if (rs != null && rs.next()) {
+                return new Professor(
+                    rs.getLong("id"),
+                    rs.getString("nome"),
+                    rs.getString("email"),
+                    rs.getString("senha"),
+                    rs.getString("matricula")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao buscar professor por ID: " + e.getMessage());
+        }
+        return null;
+    }
+
+
     
 
 
