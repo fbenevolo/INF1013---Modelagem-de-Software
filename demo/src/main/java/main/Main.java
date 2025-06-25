@@ -15,6 +15,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Digite um comando ou 'exit' para sair.");
+        printUsage();
         while (true) {
             System.out.print("> ");
             String line = scanner.nextLine();
@@ -184,16 +185,16 @@ public class Main {
     private static void printUsage() {
         System.out.println("""
                 Uso:
-                  ce <NOME_EST> <EMAIL_EST> <SENHA_EST> <MATRICULA_EST>
-                  cp <NOME_PROF> <EMAIL_PROF> <SENHA_PROF> <MATRICULA_PROF>
-                  lu <EMAIL> <SENHA>
-                  fa <TITULO_DISC> <NOTA_DISC> <NUM_TURMA> <COMENTARIO> <TAG>
-                  la (entradas opcionais) <NOME_DISCIPLINA>
-                  ct <SALA> <HORA> <CODIGO> <NOME_DISCIPLINA> <PROFESSOR>
-                  cd <codigo> <HORA> <CODIGO> <NOME_DISCIPLINA> <PROFESSOR>
-                  lt
-                  eu
-                  ex
+                  ce (Cadastrar Estudante) <NOME_EST> <EMAIL_EST> <SENHA_EST> <MATRICULA_EST>
+                  cp (Cadastrar Professor) <NOME_PROF> <EMAIL_PROF> <SENHA_PROF> <MATRICULA_PROF>
+                  lu (Login Usuario ) <EMAIL> <SENHA>
+                  fa (Fazer Avaliação) <TITULO_DISC> <NOTA_DISC> <NUM_TURMA> <COMENTARIO> <TAG>
+                  la (Listar Avaliações) (entradas opcionais) <NOME_DISCIPLINA>
+                  ct (Cadastar Turma) <SALA> <HORA> <CODIGO> <NOME_DISCIPLINA> <PROFESSOR>
+                  cd (Cadastra Disciplina) <codigo> <HORA> <CODIGO> <NOME_DISCIPLINA> <PROFESSOR>
+                  lt (Listar Turmas)
+                  eu (Logout)
+                  ex (Conseguir usuário logado)
                 """);
     }
 }
