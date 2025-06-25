@@ -102,7 +102,6 @@ public class AvaliacaoRepository {
                 long estudanteId = rs.getLong("estudante_id");
                 long turmaId = rs.getLong("turma_id");
 
-                // CORREÇÃO: Busca os objetos reais usando seus repositórios
                 Estudante estudante = estudanteRepository.buscarPorId(estudanteId);
                 Turma turma = turmaRepository.buscarPorId(turmaId);
                 Tag tag = Tag.valueOf(rs.getString("tag"));

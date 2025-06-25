@@ -22,6 +22,7 @@ public class Main {
             if (line.trim().equalsIgnoreCase("exit")) {
                 break;
             }
+            
             Pattern pattern = Pattern.compile("\"([^\"]*)\"|(\\S+)");
             Matcher matcher = pattern.matcher(line);
             java.util.List<String> inputArgsList = new java.util.ArrayList<>();
@@ -32,7 +33,13 @@ public class Main {
                     inputArgsList.add(matcher.group(2));
                 }
             }
+            
+
             String[] inputArgs = inputArgsList.toArray(new String[0]);
+
+            if (inputArgs.length == 0) {
+                continue; 
+            }
 
             switch (inputArgs[0]) {
                 case "ce" -> {
@@ -107,8 +114,8 @@ public class Main {
                     }
                 }
                 case "la" -> {
-                    if (inputArgs.length == 2){
-                        System.out.println(controller.listarAvaliacaoPorDisciplina(args[1]));
+                    if (inputArgs.length == 1){
+                        System.out.println(controller.listarAvaliacaoPorDisciplina(args[0]));
                     }else {
                         System.out.println(controller.listarAvaliacoes());
                     }
@@ -191,10 +198,10 @@ public class Main {
                   fa (Fazer Avaliação) <TITULO_DISC> <NOTA_DISC> <NUM_TURMA> <COMENTARIO> <TAG>
                   la (Listar Avaliações) (entradas opcionais) <NOME_DISCIPLINA>
                   ct (Cadastar Turma) <SALA> <HORA> <CODIGO> <NOME_DISCIPLINA> <PROFESSOR>
-                  cd (Cadastra Disciplina) <codigo> <HORA> <CODIGO> <NOME_DISCIPLINA> <PROFESSOR>
+                  cd (Cadastra Disciplina) <CODIGO> <NOME> <CREDITOS>
                   lt (Listar Turmas)
-                  eu (Logout)
-                  ex (Conseguir usuário logado)
+                  eu (Conseguir usuário logado)
+                  ex (logout)
                 """);
     }
 }
