@@ -106,7 +106,11 @@ public class Main {
                     }
                 }
                 case "la" -> {
-                    System.out.println(controller.listarAvaliacoes());
+                    if (inputArgs.length == 2){
+                        System.out.println(controller.listarAvaliacaoPorDisciplina(args[1]));
+                    }else {
+                        System.out.println(controller.listarAvaliacoes());
+                    }
                 }
                 case "lt" -> {
                     if (inputArgs.length == 1) {
