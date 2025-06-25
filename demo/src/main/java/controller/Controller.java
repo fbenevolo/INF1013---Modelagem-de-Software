@@ -147,6 +147,15 @@ public class Controller {
         return avaliacaoRepository.buscarPorDisciplina(Optional.empty(), Optional.of(nomeDisciplina));
     }
 
+    public List<Disciplina> listarDisciplinasProfessor(String nomeProfessor){
+        return professorRepository.buscarDisciplinasProfessor(nomeProfessor);
+    }
+
+    public List<Turma> listarTurmasAluno(String nomeEstudante){
+        return estudanteRepository.buscarTurmasAluno(nomeEstudante);
+    }
+
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

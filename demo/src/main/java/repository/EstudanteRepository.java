@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import model.Estudante;
+import model.Turma;
 
 public class EstudanteRepository {
 
@@ -189,4 +190,10 @@ public class EstudanteRepository {
             e.printStackTrace();
         }
     }
+
+    public List<Turma> buscarTurmasAluno(String nomeEstudante){
+
+        return null;
+    }
+
 }

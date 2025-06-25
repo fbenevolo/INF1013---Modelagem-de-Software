@@ -178,6 +178,40 @@ public class Main {
                                 "ERRO, TEMPLATE É: ex");
                     }
                 }
+                case "ta" ->{
+                    if (inputArgs.length == 2) {
+                        try {
+                            var t = controller.listarTurmasAluno(inputArgs[1]);
+                            if (t != null) {
+                                System.out.println("Turmas em que o estudante está cadastrado: " + t);
+                            } else {
+                                System.out.println("O Aluno não tem nenhuma turma");
+                            }
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("ERRO: " + e.getMessage());
+                        }
+                    } else {
+                        System.out.println(
+                                "ERRO, TEMPLATE É: ta <ALUNO>");
+                    }
+                }
+                case "dp" ->{
+                    if (inputArgs.length == 2) {
+                        try {
+                            var t = controller.listarDisciplinasProfessor(inputArgs[1]);
+                            if (t != null) {
+                                System.out.println("Turmas do professor: " + t);
+                            } else {
+                                System.out.println("O professor não está dando nenhuma aula");
+                            }
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("ERRO: " + e.getMessage());
+                        }
+                    } else {
+                        System.out.println(
+                                "ERRO, TEMPLATE É: dp <PROFESSOR>");
+                    }
+                }
                 default -> {
                     System.out.println("Comando não reconhecido.");
                     printUsage();
@@ -202,6 +236,8 @@ public class Main {
                   lt (Listar Turmas)
                   eu (Conseguir usuário logado)
                   ex (logout)
+                  dp (Listar disciplinas do professor) <PROFESSOR>
+                  ta (Listar turmas do aluno) <ALUNO>
                 """);
     }
 }

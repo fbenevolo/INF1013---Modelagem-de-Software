@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import model.Disciplina;
 import model.Professor;
 
 public class ProfessorRepository {
@@ -153,4 +155,7 @@ public class ProfessorRepository {
         return null;
     }
 
+    public List<Disciplina> buscarDisciplinasProfessor (String nomeProfessor){
+        return null;
+    }
 }
