@@ -191,9 +191,41 @@ public class EstudanteRepository {
         }
     }
 
-    public List<Turma> buscarTurmasAluno(String nomeEstudante){
+    public List<Turma> buscarTurmasAluno(String nomeEstudante) {
+        List<Turma> turmas = new ArrayList<>();
 
-        return null;
+        String sql = """
+            SELECT t.*
+            FROM Turmas t
+            JOIN Turma_Estudantes te ON t.id = te.turma_id
+            JOIN Estudantes e ON te.estudante_id = e.id
+            JOIN Usuarios u ON e.id = u.id
+            WHERE u.nome = ?
+        """;
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nomeEstudante);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Turma turma = new Turma();
+                    turma.setId(rs.getLong("id"));
+                    turma.setSala(rs.getString("sala"));
+                    turma.setHorario(rs.getString("horario"));
+                    turma.setCodigo(rs.getString("codigo"));
+                    turmas.add(turma);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return turmas;
     }
+
+
+
 
 }

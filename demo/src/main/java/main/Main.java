@@ -212,10 +212,27 @@ public class Main {
                                 "ERRO, TEMPLATE É: dp <PROFESSOR>");
                     }
                 }
+                case "mt" -> {
+                    if (inputArgs.length == 3) {
+                        try {
+                            long idEstudante = Long.parseLong(inputArgs[1]);
+                            long idTurma = Long.parseLong(inputArgs[2]);
+
+                            controller.matricularEstudante(idEstudante, idTurma);
+                            System.out.println("Estudante matriculado com sucesso na turma!");
+
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("ERRO: " + e.getMessage());
+                        }
+                    } else {
+                        System.out.println("ERRO: TEMPLATE É mt <ID_ESTUDANTE> <ID_TURMA>");
+                    }
+                }
                 default -> {
                     System.out.println("Comando não reconhecido.");
                     printUsage();
                 }
+                
             }
         }
 
@@ -226,17 +243,18 @@ public class Main {
     private static void printUsage() {
         System.out.println("""
                 Uso:
+                  cd (Cadastra Disciplina) <CODIGO> <NOME> <CREDITOS>
                   ce (Cadastrar Estudante) <NOME_EST> <EMAIL_EST> <SENHA_EST> <MATRICULA_EST>
                   cp (Cadastrar Professor) <NOME_PROF> <EMAIL_PROF> <SENHA_PROF> <MATRICULA_PROF>
-                  lu (Login Usuario ) <EMAIL> <SENHA>
-                  fa (Fazer Avaliação) <TITULO_DISC> <NOTA_DISC> <NUM_TURMA> <COMENTARIO> <TAG>
-                  la (Listar Avaliações) (entradas opcionais) <NOME_DISCIPLINA>
                   ct (Cadastar Turma) <SALA> <HORA> <CODIGO> <NOME_DISCIPLINA> <PROFESSOR>
-                  cd (Cadastra Disciplina) <CODIGO> <NOME> <CREDITOS>
-                  lt (Listar Turmas)
+                  dp (Listar disciplinas do professor) <PROFESSOR>
                   eu (Conseguir usuário logado)
                   ex (logout)
-                  dp (Listar disciplinas do professor) <PROFESSOR>
+                  fa (Fazer Avaliação) <TITULO_DISC> <NOTA_DISC> <NUM_TURMA> <COMENTARIO> <TAG>
+                  la (Listar Avaliações) (entradas opcionais) <NOME_DISCIPLINA>
+                  lu (Login Usuario ) <EMAIL> <SENHA>
+                  lt (Listar Turmas)
+                  mt (Matricular Estudante em Disciplina) <Estudante> <DISCIPLINA>
                   ta (Listar turmas do aluno) <ALUNO>
                 """);
     }

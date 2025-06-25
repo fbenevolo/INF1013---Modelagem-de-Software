@@ -146,6 +146,7 @@ public class TurmaRepository {
         if (estudante == null) {
             throw new IllegalArgumentException("Estudante não encontrado com ID: " + idEstudante);
         }
+        
 
         String sql = """
                 INSERT INTO Turma_Estudantes(turma_id, estudante_id)

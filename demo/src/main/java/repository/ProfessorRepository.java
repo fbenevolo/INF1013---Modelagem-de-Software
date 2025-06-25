@@ -155,7 +155,39 @@ public class ProfessorRepository {
         return null;
     }
 
-    public List<Disciplina> buscarDisciplinasProfessor (String nomeProfessor){
-        return null;
+    public List<Disciplina> buscarDisciplinasProfessor(String nomeProfessor) {
+        List<Disciplina> disciplinas = new ArrayList<>();
+
+        String sql = """
+            SELECT DISTINCT d.id, d.codigo, d.nome, d.numeroDeCreditos
+            FROM Disciplinas d
+            JOIN Turmas t ON t.disciplina_id = d.id
+            JOIN Professores p ON t.professor_id = p.id
+            JOIN Usuarios u ON p.id = u.id
+            WHERE u.nome = ?
+        """;
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nomeProfessor);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Disciplina d = new Disciplina(
+                        rs.getLong("id"),
+                        rs.getString("codigo"),
+                        rs.getString("nome"),
+                        rs.getInt("numeroDeCreditos")
+                    );
+                    disciplinas.add(d);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return disciplinas;
     }
+
 }

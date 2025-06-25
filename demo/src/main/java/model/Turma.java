@@ -14,6 +14,8 @@ public class Turma {
     private Set<Estudante> estudantes;
     private Professor professor;
 
+    public Turma(){}
+
     public Turma(long id, String sala, String horario, String codigo, Disciplina disciplina, Professor professor) {
         this.id = id;
         this.sala = sala;

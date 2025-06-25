@@ -12,6 +12,8 @@ public class Disciplina {
 
     private Set<Disciplina> preRequisitos;
 
+    public Disciplina(){}
+
     public Disciplina(long id, String codigo, String nome, int numeroDeCreditos) {
         this.id = id;
         this.codigo = codigo;
