@@ -130,6 +130,47 @@ public class AppRepository {
         return lista;
     }
 
+    public List<Avaliacao> listaAvaliacaoPorDisciplina(String nome){
+        String sql = """
+                    SELECT * FROM Avaliacoes as a
+                    LEFT JOIN Turmas as t ON a.turma_id = t.id
+                    LEFT JOIN Disciplinas as d ON d.id = t.disciplina_id
+        """;
+        List<Avaliacao> lista = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Estudante estudante = new Estudante(0, "Ze das couves", "bla", "Bla", "Bla"); 
+                Disciplina d = new Disciplina(0, "bla", "bla", 4);
+                Professor prof = new Professor(0, "Ze das couves", "bla", "Bla", "Bla"); 
+                estudante.setId(rs.getLong("estudante_id"));
+                Turma turma = new Turma(0, "Bla", "Bla", "blA", d ,prof); 
+                turma.setId(rs.getLong("turma_id"));
+                Tag tag = Tag.valueOf(rs.getString("tag"));
+
+                Avaliacao a = new Avaliacao(
+                        rs.getLong("id"),
+                        rs.getFloat("nota"),
+                        rs.getString("comentario"),
+                        LocalDate.parse(rs.getString("data")),
+                        rs.getString("titulo"),
+                        estudante,
+                        turma,
+                        tag
+                );
+
+                lista.add(a);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+
     // UPDATE
     public void atualizarAvaliacao(Avaliacao avaliacao) {
         String sql = """
@@ -217,6 +258,33 @@ public class AppRepository {
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setLong(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                disciplina = new Disciplina(
+                    rs.getLong("id"),
+                    rs.getString("codigo"),
+                    rs.getString("nome"),
+                    rs.getInt("numeroDeCreditos")
+                );
+                disciplina.setPreRequisitos(buscarPreRequisitos(disciplina.getId(), conn));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return disciplina;
+    }
+
+    public Disciplina buscarDisciplinaPorNome(String name) {
+        String sql = "SELECT * FROM Disciplinas WHERE nome = ?";
+        Disciplina disciplina = null;
+
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, name);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
@@ -519,6 +587,67 @@ public class AppRepository {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void inserirTurma(String sala, String horario, String codigo, String disciplinaNome, String professor){
+        String sql = """
+            INSERT INTO Turmas(sala, horario, codigo, disciplina_id, professor_id) 
+            VALUES(?,?,?,?,?)
+            """;
+        String sqlDisciplina = """
+            SELECT id FROM Disciplinas WHERE nome = ?
+            """;
+        String sqlProfessor = """
+            SELECT id FROM Usuarios WHERE nome = ?
+            """;
+        
+        try (Connection conn = DBConnection.getConnection()) {
+            Long disciplinaId = null;
+            Long professorId = null;
+            try(PreparedStatement stmt = conn.prepareStatement(sqlDisciplina)){
+                stmt.setString(1, disciplinaNome);
+                ResultSet rsDisciplina = stmt.executeQuery();
+                if (rsDisciplina.next()) {
+                    disciplinaId = rsDisciplina.getLong(1);  // ou rs.getInt("COUNT(*)") dependendo do alias
+                }
+            }  catch (SQLException e) {
+                e.printStackTrace();
+            }  
+            try (PreparedStatement stmt = conn.prepareStatement(sqlProfessor)) {
+
+                stmt.setString(1, professor);
+                ResultSet rsProfessor = stmt.executeQuery();
+                if (rsProfessor.next()) {
+                    professorId = rsProfessor.getLong(1);  // ou rs.getInt("COUNT(*)") dependendo do alias
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }  
+            try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+                stmt.setString(1, sala);
+                stmt.setString(2, horario);
+                stmt.setString(3, codigo);
+                stmt.setLong(4, disciplinaId);
+                stmt.setLong(5, professorId);
+
+
+                stmt.executeUpdate();
+
+                ResultSet keys = stmt.getGeneratedKeys();
+                
+                if (keys.next()) {
+                    long turmaId = keys.getLong(1);
+                    System.out.println("Turma inserida com ID: " + turmaId);
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch  (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     

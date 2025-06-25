@@ -75,6 +75,21 @@ public class Main {
                                 "ERRO, TEMPLATE É: ca <TITULO_DISC> <NOTA_DISC> <NUM_TURMA> <COMENTARIO> <TAG>");
                     }
                 }
+                case "la" -> {
+                    System.out.println(service.listaAvaliacao());
+                }
+                case "ct" -> {
+                    if (inputArgs.length == 6) {
+                        try {
+                            service.cadastrarTurma(inputArgs[1], inputArgs[2], inputArgs[3], inputArgs[4], inputArgs[5]);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } 
+                    } else {
+                        System.out.println(
+                                "ERRO, TEMPLATE É: ct <SALA> <HORA> <CODIGO> <NOME_DISCIPLINA> <PROFESSOR>");
+                    }
+                }
                 default -> {
                     System.out.println("Comando não reconhecido.");
                     printUsage();
@@ -93,6 +108,8 @@ public class Main {
                   cp <NOME_PROF> <EMAIL_PROF> <SENHA_PROF> <MATRICULA_PROF>
                   lu <EMAIL> <SENHA>
                   ca <TITULO_DISC> <NOTA_DISC> <NUM_TURMA> <COMENTARIO> <TAG>
+                  la (entradas opcionais) <NOME_DISCIPLINA>
+                  ct <SALA> <HORA> <CODIGO> <NOME_DISCIPLINA> <PROFESSOR> 
                 """);
     }
 }

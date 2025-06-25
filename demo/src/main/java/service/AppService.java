@@ -1,8 +1,10 @@
 package service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import model.Avaliacao;
+import model.Disciplina;
 import model.Estudante;
 import model.Professor;
 import model.Tag;
@@ -23,11 +25,27 @@ public class AppService {
         return e;
     }
 
-    public Estudante loginEstudante(String email, String senha) 
-    {
-        repository.inserirEstudante(e);
-        return e;
+    public Disciplina buscaDisciplinaPorNome(String nome){
+        return repository.buscarDisciplinaPorNome(nome);
     }
+
+    public List<Avaliacao> listaAvaliacaoPorDisciplina(String nome){
+        return repository.listaAvaliacaoPorDisciplina(nome);
+    }
+
+    public void cadastrarTurma(String sala, String horario, String codigo, String disciplinaNome, String professor){
+        repository.inserirTurma(sala, horario, codigo, disciplinaNome, professor);
+    }
+
+    public List<Avaliacao> listaAvaliacao(){
+            return repository.listarAvaliacoes();
+        }
+
+    // public Estudante loginEstudante(String email, String senha) 
+    // {
+    //     repository.inserirEstudante(e);
+    //     return e;
+    // }
 
     public Professor cadastrarProfessor(String nome, String email, String senha, String matricula) 
     {

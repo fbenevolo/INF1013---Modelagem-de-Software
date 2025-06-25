@@ -3,10 +3,17 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Main",
+      "request": "launch",
+      "mainClass": "main.Main",
+      "projectName": "INF1013---Modelagem-de-Software"
+    },
+    {
+      "type": "java",
       "name": "Launch Main",
       "request": "launch",
-      "mainClass": "main.Main", // Certifique-se que este é o nome da sua classe principal
-      "projectName": "demo", // Certifique-se que este é o nome do seu projeto Maven
+      "mainClass": "main.Main",
+      "projectName": "demo",
       "vmArgs": "--enable-native-access=ALL-UNNAMED"
     }
   ]

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.function.Function;
 
 import model.*;
+import repository.AppRepository;
 
 public class Controller {
     private List<Avaliacao> avaliacoes;
