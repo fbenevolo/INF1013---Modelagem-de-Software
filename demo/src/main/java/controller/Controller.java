@@ -1,126 +1,150 @@
 package controller;
 
-import java.util.List;
 import java.time.LocalDate;
-import java.util.LinkedList;
-import java.util.function.Function;
+import java.util.List;
+import java.util.Optional;
 
-import model.*;
-import repository.AppRepository;
+import model.Avaliacao;
+import model.Disciplina;
+import model.Estudante;
+import model.Professor;
+import model.Tag;
+import model.Turma;
+import model.Usuario;
+import repository.AvaliacaoRepository;
+import repository.DisciplinaRepository;
+import repository.EstudanteRepository;
+import repository.ProfessorRepository;
+import repository.TurmaRepository;
 
 public class Controller {
-    private List<Avaliacao> avaliacoes;
-    private List<Estudante> estudantes;
-    private List<Professor> professores;
-    private List<Turma> turmas;
-    private List<Disciplina> disciplinas;
+
+    private final EstudanteRepository estudanteRepository;
+    private final ProfessorRepository professorRepository;
+    private final DisciplinaRepository disciplinaRepository;
+    private final TurmaRepository turmaRepository;
+    private final AvaliacaoRepository avaliacaoRepository;
+    private Usuario usuarioLogado;
 
     public Controller() {
-        this.avaliacoes = new LinkedList<>();
-        this.estudantes = new LinkedList<>();
-        this.turmas = new LinkedList<>();
-        this.professores = new LinkedList<>();
-        this.disciplinas = new LinkedList<>();
+        this.estudanteRepository = new EstudanteRepository();
+        this.professorRepository = new ProfessorRepository();
+        this.disciplinaRepository = new DisciplinaRepository();
+        this.turmaRepository = new TurmaRepository();
+        this.avaliacaoRepository = new AvaliacaoRepository();
     }
 
-    private <T> T buscarPorId(long id, List<T> l, Function<T, Long> idExtractor) {
-        return l.stream()
-                .filter(item -> idExtractor.apply(item) == id)
-                .findFirst()
-                .orElse(null);
+    public Usuario getUsuarioLogado() {
+        return usuarioLogado;
     }
 
-    private Disciplina buscarDisciplinaPorId(long id) {
-        return this.buscarPorId(id, this.disciplinas, Disciplina::getId);
+    public boolean login(String email, String senha) {
+        Estudante estudante = estudanteRepository.buscarPorEmailESenha(email, senha);
+        if (estudante != null) {
+            usuarioLogado = estudante;
+            return true;
+        }
+
+        Professor professor = professorRepository.buscarPorEmailESenha(email, senha);
+        if (professor != null) {
+            usuarioLogado = professor;
+            return true;
+        }
+
+        throw new IllegalArgumentException("Usuário não encontrado ou senha incorreta.");
     }
 
-    private Estudante buscarEstudantePorId(long id) {
-        return this.buscarPorId(id, this.estudantes, Estudante::getId);
-    }
-
-    private Professor buscarProfessorPorId(long id) {
-        return this.buscarPorId(id, this.professores, Professor::getId);
+    public void logout() {
+        if (usuarioLogado == null) {
+            throw new IllegalStateException("Nenhum usuário está logado.");
+        }
+        usuarioLogado = null;
     }
 
     public Estudante cadastrarEstudante(String nome, String email, String senha, String matriculaEstudante) {
-        var e = new Estudante(estudantes.size() + 1, nome, email, senha, matriculaEstudante);
-        this.estudantes.add(e);
+        Estudante e = new Estudante(0, nome, email, senha, matriculaEstudante);
+        estudanteRepository.inserir(e);
         return e;
     }
 
     public Professor cadastrarProfessor(String nome, String email, String senha, String matriculaProfessor) {
-        var p = new Professor(professores.size() + 1, nome, email, senha, matriculaProfessor);
-        this.professores.add(p);
+        Professor p = new Professor(0, nome, email, senha, matriculaProfessor);
+        professorRepository.inserir(p);
         return p;
     }
 
     public Disciplina cadastrarDisciplina(String codigo, String nome, int creditos) {
-        var d = new Disciplina(disciplinas.size() + 1, codigo, nome, creditos);
-        this.disciplinas.add(d);
+        Disciplina d = new Disciplina(0, codigo, nome, creditos);
+        disciplinaRepository.inserir(d);
         return d;
-
     }
 
-    public Turma cadastrarTurma(String sala, String horario, String codigo, long idDisciplina, long idProfessor) {
-        var disc = this.buscarDisciplinaPorId(idDisciplina);
-        if (disc == null) {
-            System.out.println("Disciplina não encontrada. Cadastro de turma nao realizado.");
-            return null;
+    public Turma cadastrarTurma(String sala, String horario, String codigo, String disciplinaNome,
+            String professorNome) {
+        Disciplina disciplina = disciplinaRepository.buscarPorNome(disciplinaNome);
+        Professor professor = professorRepository.buscarPorNome(professorNome);
+
+        if (disciplina == null) {
+            throw new IllegalArgumentException("Erro: Disciplina '" + disciplinaNome + "' não encontrada.");
+        }
+        if (professor == null) {
+            throw new IllegalArgumentException("Erro: Professor '" + professorNome + "' não encontrado.");
         }
 
-        var prof = this.buscarProfessorPorId(idProfessor);
-        if (prof == null) {
-            System.out.println("Professor não encontrado. Cadastro de turma nao realizado.");
-            return null;
-        }
-
-        var t = new Turma(turmas.size() + 1, sala, horario, codigo, disc, prof);
-        turmas.add(t);
-        return t;
+        Turma turma = new Turma(0, sala, horario, codigo, disciplina, professor);
+        turmaRepository.inserir(turma);
+        return turma;
     }
 
     public void matricularEstudante(long idEstudante, long idTurma) {
-        var estudante = this.buscarEstudantePorId(idEstudante);
-        if (estudante == null) {
-            System.out.println("Estudante não encontrado. Matrícula não realizada.");
-            return;
-        }
-
-        var turma = this.buscarPorId(idTurma, this.turmas, Turma::getId);
-        if (turma == null) {
-            System.out.println("Turma não encontrada. Matrícula não realizada.");
-            return;
-        }
-
-        if (turma.estaMatriculado(estudante)) {
-            System.out.println("Estudante já está matriculado nesta turma.");
-            return;
-        }
-
-        turma.adicionarEstudante(estudante);
-        System.out.println(String.format("Estudante %s matriculado com sucesso!", estudante.getNome()));
+        turmaRepository.matricularEstudante(idEstudante, idTurma);
     }
 
-    public void fazerAvaliacao(float nota, String titulo, String comentario, long idEstudante, long idTurma, Tag t) {
-        var estudante = this.buscarEstudantePorId(idEstudante);
+    public Avaliacao fazerAvaliacao(float nota, String titulo, String comentario, long idTurma, Tag t) {
+        if (usuarioLogado == null) {
+            throw new IllegalStateException("Nenhum usuário logado. Faça login primeiro.");
+        }
+        Estudante estudante = estudanteRepository.buscarPorId(this.usuarioLogado.getId());
+        Turma turma = turmaRepository.buscarPorId(idTurma);
+
         if (estudante == null) {
-            System.out.println("Estudante não encontrado. Avaliação não realizada.");
-            return;
+            throw new IllegalArgumentException("Voce, provavelmente não está logado como estudante.");
         }
-        var turma = this.buscarPorId(idTurma, this.turmas, Turma::getId);
         if (turma == null) {
-            System.out.println("Turma não encontrada. Avaliação não realizada.");
-            return;
-        }
-        if (!turma.estaMatriculado(estudante)) {
-            System.out.println("Estudante não está matriculado nesta turma. Ele nao pode avaliar.");
-            return;
+            throw new IllegalArgumentException("Turma não encontrada com ID: " + idTurma);
         }
 
-        var data = LocalDate.now();
-        var nAvaliacao = new Avaliacao(
-                this.avaliacoes.size() + 1, nota, comentario, data, titulo, estudante, turma, t);
-        this.avaliacoes.add(nAvaliacao);
+        Avaliacao avaliacao = new Avaliacao(0, nota, comentario, LocalDate.now(), titulo, estudante, turma, t);
+        avaliacaoRepository.inserir(avaliacao);
+        return avaliacao;
+    }
+
+    public List<Disciplina> listarDisciplinas() {
+        return disciplinaRepository.listar();
+    }
+
+    public List<Professor> listarProfessores() {
+        return professorRepository.listar();
+    }
+
+    public List<Estudante> listarEstudantes() {
+        return estudanteRepository.listar();
+    }
+
+    public List<Turma> listarTurmas() {
+        return turmaRepository.listar();
+    }
+
+    public List<Avaliacao> listarAvaliacoes() {
+        return avaliacaoRepository.listar();
+    }
+
+    public Disciplina buscarDisciplinaPorNome(String nome) {
+        return disciplinaRepository.buscarPorNome(nome);
+    }
+
+    public List<Avaliacao> listarAvaliacaoPorDisciplina(String nomeDisciplina) {
+        return avaliacaoRepository.buscarPorDisciplina(Optional.empty(), Optional.of(nomeDisciplina));
     }
 
     @Override
@@ -128,7 +152,7 @@ public class Controller {
         StringBuilder builder = new StringBuilder();
         builder.append("=== CONTROLLER STATUS ===\n\n");
 
-        // Disciplinas
+        List<Disciplina> disciplinas = listarDisciplinas();
         builder.append("DISCIPLINAS (").append(disciplinas.size()).append("):\n");
         if (disciplinas.isEmpty()) {
             builder.append("  Nenhuma disciplina cadastrada\n");
@@ -137,7 +161,7 @@ public class Controller {
         }
         builder.append("\n");
 
-        // Professores
+        List<Professor> professores = listarProfessores();
         builder.append("PROFESSORES (").append(professores.size()).append("):\n");
         if (professores.isEmpty()) {
             builder.append("  Nenhum professor cadastrado\n");
@@ -146,7 +170,7 @@ public class Controller {
         }
         builder.append("\n");
 
-        // Estudantes
+        List<Estudante> estudantes = listarEstudantes();
         builder.append("ESTUDANTES (").append(estudantes.size()).append("):\n");
         if (estudantes.isEmpty()) {
             builder.append("  Nenhum estudante cadastrado\n");
@@ -155,7 +179,7 @@ public class Controller {
         }
         builder.append("\n");
 
-        // Turmas
+        List<Turma> turmas = listarTurmas();
         builder.append("TURMAS (").append(turmas.size()).append("):\n");
         if (turmas.isEmpty()) {
             builder.append("  Nenhuma turma cadastrada\n");
@@ -164,7 +188,7 @@ public class Controller {
         }
         builder.append("\n");
 
-        // Avaliações
+        List<Avaliacao> avaliacoes = listarAvaliacoes();
         builder.append("AVALIAÇÕES (").append(avaliacoes.size()).append("):\n");
         if (avaliacoes.isEmpty()) {
             builder.append("  Nenhuma avaliação cadastrada\n");
@@ -174,4 +198,5 @@ public class Controller {
 
         return builder.toString();
     }
+
 }
