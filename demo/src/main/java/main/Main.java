@@ -183,7 +183,11 @@ public class Main {
                         try {
                             var t = controller.listarTurmasAluno(inputArgs[1]);
                             if (t != null) {
-                                System.out.println("Turmas em que o estudante está cadastrado: " + t);
+                                System.out.println("Turmas em que o estudante está cadastrado: ");
+                                for (model.Turma turm : t)
+                                {
+                                    System.out.printf("%s - %s - %s hs", turm.getCodigo(), turm.getSala(), turm.getHorario());
+                                }
                             } else {
                                 System.out.println("O Aluno não tem nenhuma turma");
                             }

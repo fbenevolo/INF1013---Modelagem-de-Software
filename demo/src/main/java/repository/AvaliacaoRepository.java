@@ -1,6 +1,5 @@
 package repository;
 
-import DBConnection.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import DBConnection.DBConnection;
 import model.Avaliacao;
 import model.Estudante;
 import model.Tag;
@@ -95,31 +95,33 @@ public class AvaliacaoRepository {
         String sql = "SELECT * FROM Avaliacoes";
 
         try (Connection conn = DBConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
+                // Primeiro armazene todos os valores da linha
+                long id = rs.getLong("id");
+                float nota = rs.getFloat("nota");
+                String comentario = rs.getString("comentario");
+                LocalDate data = LocalDate.parse(rs.getString("data"));
+                String titulo = rs.getString("titulo");
+                String tagStr = rs.getString("tag");
                 long estudanteId = rs.getLong("estudante_id");
                 long turmaId = rs.getLong("turma_id");
 
+                // Só depois acesse outros repositórios
                 Estudante estudante = estudanteRepository.buscarPorId(estudanteId);
                 Turma turma = turmaRepository.buscarPorId(turmaId);
-                Tag tag = Tag.valueOf(rs.getString("tag"));
+                Tag tag = Tag.valueOf(tagStr);
 
-                Avaliacao a = new Avaliacao(
-                        rs.getLong("id"),
-                        rs.getFloat("nota"),
-                        rs.getString("comentario"),
-                        LocalDate.parse(rs.getString("data")),
-                        rs.getString("titulo"),
-                        estudante,
-                        turma,
-                        tag);
+                Avaliacao a = new Avaliacao(id, nota, comentario, data, titulo, estudante, turma, tag);
                 lista.add(a);
             }
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("");
         }
+
         return lista;
     }
 
