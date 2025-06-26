@@ -113,10 +113,13 @@ public class Main {
                     }
                 }
                 case "la" -> {
-                    if (inputArgs.length == 2) {
-                        System.out.println(controller.listarAvaliacaoPorDisciplina(args[0]));
-                    } else {
+                    if (inputArgs.length == 1) {
                         System.out.println(controller.listarAvaliacoes());
+                    } else if (inputArgs.length == 2) {
+                        var nomeDisciplina = inputArgs[1];
+                        System.out.println(controller.listarAvaliacaoPorDisciplina(nomeDisciplina));
+                    } else {
+                        System.out.println("ERRO, TEMPLATE É: la <NOME_DISCIPLINA>");
                     }
                 }
                 case "lt" -> {
@@ -183,9 +186,9 @@ public class Main {
                             var t = controller.listarTurmasAluno(inputArgs[1]);
                             if (t != null) {
                                 System.out.println("Turmas em que o estudante está cadastrado: ");
-                                for (model.Turma turm : t)
-                                {
-                                    System.out.printf("%s - %s - %s hs", turm.getCodigo(), turm.getSala(), turm.getHorario());
+                                for (model.Turma turm : t) {
+                                    System.out.printf("%s - %s - %s hs", turm.getCodigo(), turm.getSala(),
+                                            turm.getHorario());
                                 }
                             } else {
                                 System.out.println("O Aluno não tem nenhuma turma");

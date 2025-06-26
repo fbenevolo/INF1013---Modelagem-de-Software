@@ -194,6 +194,30 @@ public class AvaliacaoRepository {
 
     public List<Avaliacao> buscarPorDisciplina(Optional<Long> disciplinaId, Optional<String> nomeDisciplina) {
         List<Avaliacao> lista = new ArrayList<>();
+        class AvaliacaoRaw {
+            long id;
+            float nota;
+            String comentario;
+            String data;
+            String titulo;
+            long estudanteId;
+            long turmaId;
+            String tag;
+
+            AvaliacaoRaw(long id, float nota, String comentario, String data, String titulo, long estudanteId,
+                    long turmaId, String tag) {
+                this.id = id;
+                this.nota = nota;
+                this.comentario = comentario;
+                this.data = data;
+                this.titulo = titulo;
+                this.estudanteId = estudanteId;
+                this.turmaId = turmaId;
+                this.tag = tag;
+            }
+        }
+        List<AvaliacaoRaw> raws = new ArrayList<>();
+
         StringBuilder sql = new StringBuilder("SELECT a.* FROM Avaliacoes a INNER JOIN Turmas t ON a.turma_id = t.id");
         sql.append(" INNER JOIN Disciplinas d ON t.disciplina_id = d.id");
 
@@ -214,32 +238,40 @@ public class AvaliacaoRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    long estudanteId = rs.getLong("estudante_id");
-                    long turmaId = rs.getLong("turma_id");
-
-                    // CORREÇÃO: Busca os objetos reais usando seus repositórios
-                    Estudante estudante = estudanteRepository.buscarPorId(estudanteId);
-                    Turma turma = turmaRepository.buscarPorId(turmaId);
-                    Tag tag = Tag.valueOf(rs.getString("tag"));
-
-                    Avaliacao a = new Avaliacao(
+                    raws.add(new AvaliacaoRaw(
                             rs.getLong("id"),
                             rs.getFloat("nota"),
                             rs.getString("comentario"),
-                            LocalDate.parse(rs.getString("data")),
+                            rs.getString("data"),
                             rs.getString("titulo"),
-                            estudante,
-                            turma,
-                            tag);
-                    lista.add(a);
+                            rs.getLong("estudante_id"),
+                            rs.getLong("turma_id"),
+                            rs.getString("tag")));
                 }
-                return lista;
             }
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
 
+        for (AvaliacaoRaw raw : raws) {
+            System.out.println("Raws: " + raw.titulo);
+            Estudante estudante = estudanteRepository.buscarPorId(raw.estudanteId);
+            Turma turma = turmaRepository.buscarPorId(raw.turmaId);
+            Tag tag = Tag.valueOf(raw.tag);
+
+            Avaliacao a = new Avaliacao(
+                    raw.id,
+                    raw.nota,
+                    raw.comentario,
+                    LocalDate.parse(raw.data),
+                    raw.titulo,
+                    estudante,
+                    turma,
+                    tag);
+            lista.add(a);
+        }
+        return lista;
     }
 
     // UPDATE
