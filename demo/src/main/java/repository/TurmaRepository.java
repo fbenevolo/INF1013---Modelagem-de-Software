@@ -121,7 +121,6 @@ public class TurmaRepository {
             return null;
         }
 
-        // Agora, fora do bloco try, busque as entidades relacionadas
         for (TurmaRaw raw : raws) {
             Disciplina disciplina = disciplinaRepository.buscarPorId(raw.disciplinaId);
             Professor professor = professorRepository.buscarPorId(raw.professorId);
@@ -146,7 +145,6 @@ public class TurmaRepository {
         if (estudante == null) {
             throw new IllegalArgumentException("Estudante não encontrado com ID: " + idEstudante);
         }
-        
 
         String sql = """
                 INSERT INTO Turma_Estudantes(turma_id, estudante_id)

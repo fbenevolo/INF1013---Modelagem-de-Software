@@ -92,36 +92,66 @@ public class AvaliacaoRepository {
 
     public List<Avaliacao> listar() {
         List<Avaliacao> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Avaliacoes";
+        class AvaliacaoRaw {
+            long id;
+            float nota;
+            String comentario;
+            String data;
+            String titulo;
+            long estudanteId;
+            long turmaId;
+            String tag;
 
+            AvaliacaoRaw(long id, float nota, String comentario, String data, String titulo, long estudanteId,
+                    long turmaId, String tag) {
+                this.id = id;
+                this.nota = nota;
+                this.comentario = comentario;
+                this.data = data;
+                this.titulo = titulo;
+                this.estudanteId = estudanteId;
+                this.turmaId = turmaId;
+                this.tag = tag;
+            }
+        }
+        List<AvaliacaoRaw> raws = new ArrayList<>();
+
+        String sql = "SELECT * FROM Avaliacoes";
         try (Connection conn = DBConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery()) {
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                // Primeiro armazene todos os valores da linha
-                long id = rs.getLong("id");
-                float nota = rs.getFloat("nota");
-                String comentario = rs.getString("comentario");
-                LocalDate data = LocalDate.parse(rs.getString("data"));
-                String titulo = rs.getString("titulo");
-                String tagStr = rs.getString("tag");
-                long estudanteId = rs.getLong("estudante_id");
-                long turmaId = rs.getLong("turma_id");
-
-                // Só depois acesse outros repositórios
-                Estudante estudante = estudanteRepository.buscarPorId(estudanteId);
-                Turma turma = turmaRepository.buscarPorId(turmaId);
-                Tag tag = Tag.valueOf(tagStr);
-
-                Avaliacao a = new Avaliacao(id, nota, comentario, data, titulo, estudante, turma, tag);
-                lista.add(a);
+                raws.add(new AvaliacaoRaw(
+                        rs.getLong("id"),
+                        rs.getFloat("nota"),
+                        rs.getString("comentario"),
+                        rs.getString("data"),
+                        rs.getString("titulo"),
+                        rs.getLong("estudante_id"),
+                        rs.getLong("turma_id"),
+                        rs.getString("tag")));
             }
-
         } catch (Exception e) {
-            System.out.println("");
+            throw new RuntimeException("Erro ao listar avaliações: " + e.getMessage(), e);
         }
 
+        for (AvaliacaoRaw raw : raws) {
+            Estudante estudante = estudanteRepository.buscarPorId(raw.estudanteId);
+            Turma turma = turmaRepository.buscarPorId(raw.turmaId);
+            Tag tag = Tag.valueOf(raw.tag);
+
+            Avaliacao a = new Avaliacao(
+                    raw.id,
+                    raw.nota,
+                    raw.comentario,
+                    LocalDate.parse(raw.data),
+                    raw.titulo,
+                    estudante,
+                    turma,
+                    tag);
+            lista.add(a);
+        }
         return lista;
     }
 

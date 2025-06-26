@@ -22,7 +22,7 @@ public class Main {
             if (line.trim().equalsIgnoreCase("exit")) {
                 break;
             }
-            
+
             Pattern pattern = Pattern.compile("\"([^\"]*)\"|(\\S+)");
             Matcher matcher = pattern.matcher(line);
             java.util.List<String> inputArgsList = new java.util.ArrayList<>();
@@ -33,12 +33,11 @@ public class Main {
                     inputArgsList.add(matcher.group(2));
                 }
             }
-            
 
             String[] inputArgs = inputArgsList.toArray(new String[0]);
 
             if (inputArgs.length == 0) {
-                continue; 
+                continue;
             }
 
             switch (inputArgs[0]) {
@@ -114,9 +113,9 @@ public class Main {
                     }
                 }
                 case "la" -> {
-                    if (inputArgs.length == 1){
+                    if (inputArgs.length == 2) {
                         System.out.println(controller.listarAvaliacaoPorDisciplina(args[0]));
-                    }else {
+                    } else {
                         System.out.println(controller.listarAvaliacoes());
                     }
                 }
@@ -178,7 +177,7 @@ public class Main {
                                 "ERRO, TEMPLATE É: ex");
                     }
                 }
-                case "ta" ->{
+                case "ta" -> {
                     if (inputArgs.length == 2) {
                         try {
                             var t = controller.listarTurmasAluno(inputArgs[1]);
@@ -199,7 +198,7 @@ public class Main {
                                 "ERRO, TEMPLATE É: ta <ALUNO>");
                     }
                 }
-                case "dp" ->{
+                case "dp" -> {
                     if (inputArgs.length == 2) {
                         try {
                             var t = controller.listarDisciplinasProfessor(inputArgs[1]);
@@ -236,7 +235,7 @@ public class Main {
                     System.out.println("Comando não reconhecido.");
                     printUsage();
                 }
-                
+
             }
         }
 
